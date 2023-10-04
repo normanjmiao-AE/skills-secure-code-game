@@ -17,16 +17,22 @@ class TaxPayer:
         self.prof_picture = None
         self.tax_form_attachment = None
 
+    def safe_path(self, path):
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        filepath = os.path.normpath(os.path.join(base_dir, path))
+        if base_dir != os.path.commonpath([base_dir, filepath]):
+            return None
+        return filepath
+
     # returns the path of an optional profile picture that users can set        
     def get_prof_picture(self, path=None):
+
+        path = self.safe_path(path)
+
         # setting a profile picture is optional
         if not path:
-            pass
-        
-        # defends against path traversal attacks
-        if path.startswith('/') or path.startswith('..'):
-            return None
-        
+            pass        
+
         # builds path
         base_dir = os.path.dirname(os.path.abspath(__file__))
         prof_picture_path = os.path.normpath(os.path.join(base_dir, path))
@@ -41,6 +47,8 @@ class TaxPayer:
     def get_tax_form_attachment(self, path=None):
         tax_data = None
         
+        path = self.safe_path(path)
+
         if not path:
             raise Exception("Error: Tax form is required for all users")
        
